@@ -1,34 +1,49 @@
 <?php
-require_once "config/db.php";
-include "includes/header.php";
-?>
 
-<h2>Product Catalog</h2>
+require_once __DIR__ . "/config/db.php";
 
-<?php
-$result = mysqli_query($conn, "SELECT * FROM products");
+require_once __DIR__ . "/app/controllers/CatalogController.php";
+require_once __DIR__ . "/app/controllers/CartController.php";
 
-if (!$result) {
-    echo "<p>Error retrieving products.</p>";
-} else {
-    while ($row = mysqli_fetch_assoc($result)) {
-?>
-        <div class="product">
-            <h3><?php echo $row['name']; ?></h3>
-            <p><?php echo $row['description']; ?></p>
-            <p><strong>$<?php echo number_format($row['price'], 2); ?></strong></p>
+$controller = $_GET['controller'] ?? 'catalog';
+$action     = $_GET['action'] ?? 'index';
 
-            <form method="post" action="cart.php">
-                <input type="hidden" name="product_id" value="<?php echo $row['product_id']; ?>">
-                <button type="submit">Add to Cart</button>
-            </form>
-        </div>
-        <hr>
-<?php
-    }
+switch ($controller) {
+
+    case 'cart':
+        $cartController = new CartController();
+
+        switch ($action) {
+
+            case 'add':
+                $cartController->add();
+                break;
+
+            case 'view':
+                $cartController->view();
+                break;
+
+            case 'update':
+                $cartController->update();
+                break;
+
+            case 'remove':
+                $cartController->remove();
+                break;
+
+            case 'clear':
+                $cartController->clear();
+                break;
+
+            default:
+                header("Location: index.php");
+                exit();
+        }
+        break;
+
+    case 'catalog':
+    default:
+        $catalogController = new CatalogController();
+        $catalogController->index();
+        break;
 }
-?>
-
-<?php
-include "includes/footer.php";
-?>
