@@ -35,6 +35,10 @@ switch ($controller) {
                 $cartController->clear();
                 break;
 
+            case 'checkout':
+                $cartController->checkout(); // ✅ keeps logic in controller
+                break;
+
             default:
                 header("Location: index.php");
                 exit();
